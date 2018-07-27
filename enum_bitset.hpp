@@ -6,11 +6,11 @@
 namespace enum_bitset {
 
 template <typename T>
-constexpr std::false_type is_enum_bitset(T t) { return {}; }
+constexpr size_t enum_bitset_size(T t) { return 0; }
 
-template <typename T, typename = std::enable_if_t<is_enum_bitset(T{})>>
-class enum_bitset : private std::bitset<sizeof(std::underlying_type_t<T>)*8> {
-    using Super = std::bitset<sizeof(std::underlying_type_t<T>)*8>;
+template <typename T, typename = std::enable_if_t<!!enum_bitset_size(T{})>>
+class enum_bitset : private std::bitset<enum_bitset_size(T{})> {
+    using Super = std::bitset<enum_bitset_size(T{})>;
     using Underlying = std::underlying_type_t<T>;
 
     static constexpr Underlying from_enum(T t) {
@@ -124,17 +124,17 @@ public:
 namespace operators {
 
 template <typename T>
-std::enable_if_t<is_enum_bitset(T{}), enum_bitset<T>> operator|(T lhs, T rhs) {
+std::enable_if_t<!!enum_bitset_size(T{}), enum_bitset<T>> operator|(T lhs, T rhs) {
     return enum_bitset<T>(lhs) | enum_bitset<T>(rhs);
 }
 
 template <typename T>
-std::enable_if_t<is_enum_bitset(T{}), enum_bitset<T>> operator&(T lhs, T rhs) {
+std::enable_if_t<!!enum_bitset_size(T{}), enum_bitset<T>> operator&(T lhs, T rhs) {
     return enum_bitset<T>(lhs) & enum_bitset<T>(rhs);
 }
 
 template <typename T>
-std::enable_if_t<is_enum_bitset(T{}), enum_bitset<T>> operator^(T lhs, T rhs) {
+std::enable_if_t<!!enum_bitset_size(T{}), enum_bitset<T>> operator^(T lhs, T rhs) {
     return enum_bitset<T>(lhs) ^ enum_bitset<T>(rhs);
 }
 
